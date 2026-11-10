@@ -58,6 +58,16 @@ public class HomeController {
     }
 
     // ========================
+    // DASHBOARD (ADMIN e GERENTE)
+    // ========================
+    // a tela vem vazia e busca os dados em /api/dashboard/** (ver static/js/dashboard.js)
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        model.addAttribute("content", "dashboard :: content");
+        return "layout";
+    }
+
+    // ========================
     // USUÁRIOS (somente ADMIN)
     // ========================
     @GetMapping("/usuarios")

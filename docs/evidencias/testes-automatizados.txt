@@ -1,0 +1,13 @@
+Running com.umc.pediupatrao.controller.DashboardApiTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.154 s -- in com.umc.pediupatrao.controller.DashboardApiTest
+Running com.umc.pediupatrao.controller.PedidoSegurancaTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.722 s -- in com.umc.pediupatrao.controller.PedidoSegurancaTest
+Running com.umc.pediupatrao.service.ClienteServiceTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.305 s -- in com.umc.pediupatrao.service.ClienteServiceTest
+Running com.umc.pediupatrao.service.DashboardServiceTest
+Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.221 s -- in com.umc.pediupatrao.service.DashboardServiceTest
+Running com.umc.pediupatrao.service.PedidoServiceTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.067 s -- in com.umc.pediupatrao.service.PedidoServiceTest
+Tests run: 51, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+Total time:  13.427 s

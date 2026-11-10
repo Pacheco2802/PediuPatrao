@@ -1,0 +1,136 @@
+EVIDENCIAS - API DO DASHBOARD (10/11/2026 16:30)
+
+===== 1. CONTROLE DE ACESSO =====
+------------------------------------------------------------
+CT01 - sem login deve dar 401
+GET /api/dashboard/indicadores
+
+HTTP 401
+
+------------------------------------------------------------
+CT02 - ATENDENTE deve dar 403
+GET /api/dashboard/indicadores
+{"timestamp":"2026-11-10T19:30:20.126+00:00","status":403,"error":"Forbidden","path":"/api/dashboard/indicadores"}
+HTTP 403
+
+------------------------------------------------------------
+CT03 - ADMIN deve dar 200
+GET /api/dashboard/filtros
+{"status":["RECEBIDO","EM_PREPARACAO","PRONTO","SAIU_PARA_ENTREGA","RETIRADO","FINALIZADO","CANCELADO"],"tiposEntrega":["ENTREGA","RETIRADA"],"dataInicioPadrao":"2026-11-04","dataFimPadrao":"2026-11-10","periodoMaximoDias":366}
+HTTP 200
+
+===== 2. ENDPOINTS (GERENTE, periodo padrao de 7 dias) =====
+------------------------------------------------------------
+CT04 - indicadores gerais (RF01)
+GET /api/dashboard/indicadores
+{"periodo":{"dataInicio":"2026-11-04","dataFim":"2026-11-10","dias":7},"totalPedidos":44,"pedidosValidos":40,"pedidosEmAndamento":3,"pedidosFinalizados":37,"pedidosCancelados":4,"taxaCancelamento":9.09,"faturamento":4555.1,"ticketMedio":113.88,"totalDescontos":63.9,"itensVendidos":115,"faturamentoPeriodoAnterior":4872.25,"pedidosPeriodoAnterior":39,"variacaoFaturamento":-6.51,"atualizadoEm":"2026-11-10T16:30:20.3842215"}
+HTTP 200
+
+------------------------------------------------------------
+CT05 - vendas por dia (RF02)
+GET /api/dashboard/vendas-por-dia
+[{"data":"2026-11-04","pedidos":5,"faturamento":707.0},{"data":"2026-11-05","pedidos":3,"faturamento":238.3},{"data":"2026-11-06","pedidos":7,"faturamento":687.0},{"data":"2026-11-07","pedidos":9,"faturamento":1301.9},{"data":"2026-11-08","pedidos":8,"faturamento":785.4},{"data":"2026-11-09","pedidos":5,"faturamento":653.5},{"data":"2026-11-10","pedidos":3,"faturamento":182.0}]
+HTTP 200
+
+------------------------------------------------------------
+CT06 - vendas por hora (RF02)
+GET /api/dashboard/vendas-por-hora
+[{"hora":0,"pedidos":0,"faturamento":0.0},{"hora":1,"pedidos":0,"faturamento":0.0},{"hora":2,"pedidos":0,"faturamento":0.0},{"hora":3,"pedidos":0,"faturamento":0.0},{"hora":4,"pedidos":0,"faturamento":0.0},{"hora":5,"pedidos":0,"faturamento":0.0},{"hora":6,"pedidos":0,"faturamento":0.0},{"hora":7,"pedidos":0,"faturamento":0.0},{"hora":8,"pedidos":0,"faturamento":0.0},{"hora":9,"pedidos":0,"faturamento":0.0},{"hora":10,"pedidos":0,"faturamento":0.0},{"hora":11,"pedidos":1,"faturamento":80.0},{"hora":12,"pedidos":2,"faturamento":230.0},{"hora":13,"pedidos":1,"faturamento":84.0},{"hora":14,"pedidos":1,"faturamento":161.0},{"hora":15,"pedidos":3,"faturamento":182.0},{"hora":16,"pedidos":0,"faturamento":0.0},{"hora":17,"pedidos":0,"faturamento":0.0},{"hora":18,"pedidos":7,"faturamento":783.7},{"hora":19,"pedidos":7,"faturamento":774.2},{"hora":20,"pedidos":5,"faturamento":754.0},{"hora":21,"pedidos":7,"faturamento":797.2},{"hora":22,"pedidos":3,"faturamento":259.5},{"hora":23,"pedidos":3,"faturamento":449.5}]
+HTTP 200
+
+------------------------------------------------------------
+CT07 - vendas por categoria (RF02)
+GET /api/dashboard/vendas-por-categoria
+[{"categoria":"Pizza","quantidade":95,"faturamento":4411.0,"percentual":95.5},{"categoria":"Bebida","quantidade":12,"faturamento":144.0,"percentual":3.12},{"categoria":"Adicional","quantidade":8,"faturamento":64.0,"percentual":1.39}]
+HTTP 200
+
+------------------------------------------------------------
+CT08 - pedidos por status (RF03)
+GET /api/dashboard/pedidos-por-status
+[{"status":"RECEBIDO","quantidade":0,"valor":0.0,"percentual":0.0},{"status":"EM_PREPARACAO","quantidade":3,"valor":182.0,"percentual":6.82},{"status":"PRONTO","quantidade":0,"valor":0.0,"percentual":0.0},{"status":"SAIU_PARA_ENTREGA","quantidade":0,"valor":0.0,"percentual":0.0},{"status":"RETIRADO","quantidade":0,"valor":0.0,"percentual":0.0},{"status":"FINALIZADO","quantidade":37,"valor":4373.1,"percentual":84.09},{"status":"CANCELADO","quantidade":4,"valor":463.0,"percentual":9.09}]
+HTTP 200
+
+------------------------------------------------------------
+CT09 - pedidos recentes, limite 3 (RF03)
+GET /api/dashboard/pedidos-recentes?limite=3
+[{"id":"6af370b45e6fc63afa51e594","clienteNome":"Diego Rocha (demo)","tipoEntrega":"RETIRADA","status":"EM_PREPARACAO","quantidadeItens":2,"valorTotal":50.0,"dataHoraEntrada":"2026-11-10T15:57:56.836"},{"id":"6af370b45e6fc63afa51e593","clienteNome":"Carla Mendes (demo)","tipoEntrega":"ENTREGA","status":"EM_PREPARACAO","quantidadeItens":2,"valorTotal":90.0,"dataHoraEntrada":"2026-11-10T15:53:56.836"},{"id":"6af370b45e6fc63afa51e592","clienteNome":"Ana Souza (demo)","tipoEntrega":"ENTREGA","status":"EM_PREPARACAO","quantidadeItens":1,"valorTotal":42.0,"dataHoraEntrada":"2026-11-10T15:26:56.836"}]
+HTTP 200
+
+------------------------------------------------------------
+CT10 - produtos mais vendidos, limite 3 (RF04)
+GET /api/dashboard/produtos-mais-vendidos?limite=3
+[{"posicao":1,"produtoId":"6af370b45e6fc63afa51e531","nome":"Pizza Calabresa","categoria":"Pizza","quantidade":37,"faturamento":1665.0,"percentual":32.17},{"posicao":2,"produtoId":"6af370b45e6fc63afa51e533","nome":"Pizza Portuguesa","categoria":"Pizza","quantidade":31,"faturamento":1612.0,"percentual":26.96},{"posicao":3,"produtoId":"6af370b45e6fc63afa51e532","nome":"Pizza Mussarela","categoria":"Pizza","quantidade":27,"faturamento":1134.0,"percentual":23.48}]
+HTTP 200
+
+===== 3. FILTROS (RF05) =====
+------------------------------------------------------------
+CT11 - somente hoje
+GET /api/dashboard/indicadores?dataInicio=2026-11-10&dataFim=2026-11-10
+{"periodo":{"dataInicio":"2026-11-10","dataFim":"2026-11-10","dias":1},"totalPedidos":3,"pedidosValidos":3,"pedidosEmAndamento":3,"pedidosFinalizados":0,"pedidosCancelados":0,"taxaCancelamento":0.0,"faturamento":182.0,"ticketMedio":60.67,"totalDescontos":0.0,"itensVendidos":5,"faturamentoPeriodoAnterior":653.5,"pedidosPeriodoAnterior":5,"variacaoFaturamento":-72.15,"atualizadoEm":"2026-11-10T16:30:20.8521344"}
+HTTP 200
+
+------------------------------------------------------------
+CT12 - somente RETIRADA
+GET /api/dashboard/indicadores?tipoEntrega=RETIRADA
+{"periodo":{"dataInicio":"2026-11-04","dataFim":"2026-11-10","dias":7},"totalPedidos":10,"pedidosValidos":10,"pedidosEmAndamento":1,"pedidosFinalizados":9,"pedidosCancelados":0,"taxaCancelamento":0.0,"faturamento":933.0,"ticketMedio":93.3,"totalDescontos":45.0,"itensVendidos":26,"faturamentoPeriodoAnterior":1749.15,"pedidosPeriodoAnterior":14,"variacaoFaturamento":-46.66,"atualizadoEm":"2026-11-10T16:30:20.9118412"}
+HTTP 200
+
+------------------------------------------------------------
+CT13 - somente CANCELADO (faturamento deve ser 0)
+GET /api/dashboard/indicadores?status=CANCELADO
+{"periodo":{"dataInicio":"2026-11-04","dataFim":"2026-11-10","dias":7},"totalPedidos":4,"pedidosValidos":0,"pedidosEmAndamento":0,"pedidosFinalizados":0,"pedidosCancelados":4,"taxaCancelamento":100.0,"faturamento":0.0,"ticketMedio":0.0,"totalDescontos":0.0,"itensVendidos":0,"faturamentoPeriodoAnterior":0.0,"pedidosPeriodoAnterior":0,"variacaoFaturamento":null,"atualizadoEm":"2026-11-10T16:30:20.9763074"}
+HTTP 200
+
+------------------------------------------------------------
+CT14 - periodo sem pedidos (tudo zerado, sem erro)
+GET /api/dashboard/indicadores?dataInicio=2020-01-01&dataFim=2020-01-07
+{"periodo":{"dataInicio":"2020-01-01","dataFim":"2020-01-07","dias":7},"totalPedidos":0,"pedidosValidos":0,"pedidosEmAndamento":0,"pedidosFinalizados":0,"pedidosCancelados":0,"taxaCancelamento":0.0,"faturamento":0.0,"ticketMedio":0.0,"totalDescontos":0.0,"itensVendidos":0,"faturamentoPeriodoAnterior":0.0,"pedidosPeriodoAnterior":0,"variacaoFaturamento":null,"atualizadoEm":"2026-11-10T16:30:21.0273777"}
+HTTP 200
+
+===== 4. ERROS =====
+------------------------------------------------------------
+CT15 - data em formato errado deve dar 400
+GET /api/dashboard/indicadores?dataInicio=10/11/2026
+{"erro":"Parâmetro dataInicio inválido. Use o formato AAAA-MM-DD (ex: 2026-11-10)."}
+HTTP 400
+
+------------------------------------------------------------
+CT16 - data inicial maior que a final deve dar 400
+GET /api/dashboard/vendas-por-dia?dataInicio=2026-11-10&dataFim=2020-01-01
+{"erro":"A data inicial não pode ser maior que a data final."}
+HTTP 400
+
+------------------------------------------------------------
+CT17 - periodo maior que 366 dias deve dar 400
+GET /api/dashboard/vendas-por-dia?dataInicio=2020-01-01&dataFim=2026-11-10
+{"erro":"O período máximo de consulta é de 366 dias."}
+HTTP 400
+
+------------------------------------------------------------
+CT18 - status inexistente deve dar 400
+GET /api/dashboard/pedidos-por-status?status=ENTREGUE
+{"erro":"Status inválido. Use um destes: RECEBIDO, EM_PREPARACAO, PRONTO, SAIU_PARA_ENTREGA, RETIRADO, FINALIZADO, CANCELADO."}
+HTTP 400
+
+------------------------------------------------------------
+CT19 - tipo de entrega inexistente deve dar 400
+GET /api/dashboard/indicadores?tipoEntrega=MOTOBOY
+{"erro":"Tipo de entrega inválido. Use ENTREGA ou RETIRADA."}
+HTTP 400
+
+------------------------------------------------------------
+CT20 - limite fora da faixa deve dar 400
+GET /api/dashboard/produtos-mais-vendidos?limite=0
+{"erro":"O parâmetro limite deve estar entre 1 e 50."}
+HTTP 400
+
+------------------------------------------------------------
+CT21 - limite que nao e numero deve dar 400
+GET /api/dashboard/produtos-mais-vendidos?limite=abc
+{"erro":"Parâmetro limite inválido."}
+HTTP 400
+
+------------------------------------------------------------
+CT22 - POST no dashboard (somente leitura) deve dar 403
+POST /api/dashboard/indicadores
+HTTP 403
