@@ -7,6 +7,21 @@ Nesta parte da atividade evoluí o projeto que foi passado em aula, mantendo as 
 (entity, repository, service, controller) e acrescentando controle por perfil, fluxo de pedidos,
 descontos, cancelamento e auditoria.
 
+## Dashboard Administrativo
+
+Painel com indicadores de vendas, graficos, situacao dos pedidos, ranking de produtos e filtros,
+alimentado pela API `/api/dashboard/**` (perfis ADMIN e GERENTE). Tela em `/dashboard`.
+
+- Documento da entrega (requisitos, endpoints, evidencias de testes e decisoes): [docs/DASHBOARD.md](docs/DASHBOARD.md)
+- Evidencias: [docs/evidencias](docs/evidencias)
+- Roteiro do video: [docs/ROTEIRO-VIDEO.md](docs/ROTEIRO-VIDEO.md)
+
+Para criar pedidos de demonstracao (uma unica vez) e ver o dashboard preenchido:
+
+```
+mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--pediupatrao.demo.popular-pedidos=true"
+```
+
 ## Como executar
 
 Requisitos: JDK 21 instalado (o Maven pode ser o wrapper que já vem no projeto).
@@ -39,7 +54,7 @@ Na primeira execução a classe `DataInitializer` cria os usuários de teste e a
 mvnw.cmd test
 ```
 
-São 22 testes (JUnit + Mockito + MockMvc). Eles não precisam do MongoDB rodando.
+São 51 testes (JUnit + Mockito + MockMvc). Eles não precisam do MongoDB rodando.
 
 - `PedidoServiceTest`: cálculo do total, transições válidas e inválidas, desconto (limite de 20% e só antes da saída) e cancelamento.
 - `ClienteServiceTest`: auditoria registra só o campo que mudou (ex: logradouro) e máscara de dados.
