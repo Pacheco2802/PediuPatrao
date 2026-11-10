@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+
+<!-- A tela vem sem dados: tudo e buscado em /api/dashboard/** pelo dashboard.js -->
+<div th:fragment="content" class="dash">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard
+        </h2>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted small" id="dash-atualizado" aria-live="polite"></span>
+            <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="dash-auto" checked>
+                <label class="form-check-label small" for="dash-auto">Atualizar a cada 60 s</label>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="dash-atualizar">
+                <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+            </button>
+        </div>
+    </div>
+
+    <!-- RF05 - filtros (valem para a pagina inteira) -->
+    <form class="card shadow-sm mb-3" id="dash-filtros" novalidate>
+        <div class="card-body py-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-xl-auto">
+                    <label class="form-label small text-muted mb-1 d-block">Período</label>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Períodos rápidos">
+                        <button type="button" class="btn btn-outline-secondary" data-dias="1">Hoje</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dias="7">7 dias</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dias="14">14 dias</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dias="30">30 dias</button>
+                    </div>
+                </div>
+                <div class="col-6 col-md-auto">
+                    <label class="form-label small text-muted mb-1" for="dash-inicio">De</label>
+                    <input type="date" class="form-control form-control-sm" id="dash-inicio">
+                </div>
+                <div class="col-6 col-md-auto">
+                    <label class="form-label small text-muted mb-1" for="dash-fim">Até</label>
+                    <input type="date" class="form-control form-control-sm" id="dash-fim">
+                </div>
+                <div class="col-6 col-md-auto">
+                    <label class="form-label small text-muted mb-1" for="dash-status">Status</label>
+                    <select class="form-select form-select-sm" id="dash-status">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-auto">
+                    <label class="form-label small text-muted mb-1" for="dash-tipo">Tipo</label>
+                    <select class="form-select form-select-sm" id="dash-tipo">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-auto d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-funnel me-1"></i>Aplicar
+                    </button>
+                    <button type="button" class="btn btn-link btn-sm text-decoration-none" id="dash-limpar">Limpar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- erro geral (filtro invalido, sem conexao...) -->
+    <div class="alert alert-danger d-none" id="dash-erro" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span></span>
+    </div>
+
+    <!-- RF01 - indicadores gerais -->
+    <div class="row g-3 mb-3" id="dash-indicadores">
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 dash-kpi">
+                <div class="card-body">
+                    <div class="dash-kpi-rotulo">Faturamento</div>
+                    <div class="dash-kpi-valor" id="kpi-faturamento">–</div>
+                    <div class="dash-kpi-apoio" id="kpi-faturamento-apoio">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 dash-kpi">
+                <div class="card-body">
+                    <div class="dash-kpi-rotulo">Pedidos</div>
+                    <div class="dash-kpi-valor" id="kpi-pedidos">–</div>
+                    <div class="dash-kpi-apoio" id="kpi-pedidos-apoio">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 dash-kpi">
+                <div class="card-body">
+                    <div class="dash-kpi-rotulo">Ticket médio</div>
+                    <div class="dash-kpi-valor" id="kpi-ticket">–</div>
+                    <div class="dash-kpi-apoio" id="kpi-ticket-apoio">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 dash-kpi">
+                <div class="card-body">
+                    <div class="dash-kpi-rotulo">Cancelamentos</div>
+                    <div class="dash-kpi-valor" id="kpi-cancelados">–</div>
+                    <div class="dash-kpi-apoio" id="kpi-cancelados-apoio">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <!-- RF02 - vendas por dia -->
+        <div class="col-12 col-xl-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="dash-titulo">Faturamento por dia</h6>
+                    <p class="dash-subtitulo">Pedidos cancelados não entram na conta</p>
+                    <div class="dash-bloco" id="bloco-dia">
+                        <div class="dash-grafico"><canvas id="grafico-dia" aria-label="Gráfico de faturamento por dia" role="img"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- RF03 - situacao dos pedidos -->
+        <div class="col-12 col-xl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="dash-titulo">Situação dos pedidos</h6>
+                    <p class="dash-subtitulo">Quantidade de pedidos em cada etapa</p>
+                    <div class="dash-bloco" id="bloco-status">
+                        <div id="lista-status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <!-- RF02 - horario de pico -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="dash-titulo">Pedidos por hora do dia</h6>
+                    <p class="dash-subtitulo">Mostra os horários de pico da operação</p>
+                    <div class="dash-bloco" id="bloco-hora">
+                        <div class="dash-grafico"><canvas id="grafico-hora" aria-label="Gráfico de pedidos por hora" role="img"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- RF02 - categorias -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="dash-titulo">Vendas por categoria</h6>
+                    <p class="dash-subtitulo">Valor dos itens vendidos, antes de descontos</p>
+                    <div class="dash-bloco" id="bloco-categoria">
+                        <div class="dash-grafico"><canvas id="grafico-categoria" aria-label="Gráfico de vendas por categoria" role="img"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <!-- RF04 - produtos mais vendidos -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="dash-titulo">Produtos mais vendidos</h6>
+                            <p class="dash-subtitulo">Ranking por quantidade vendida</p>
+                        </div>
+                        <select class="form-select form-select-sm w-auto" id="dash-limite" aria-label="Tamanho do ranking">
+                            <option value="5" selected>Top 5</option>
+                            <option value="10">Top 10</option>
+                            <option value="20">Top 20</option>
+                        </select>
+                    </div>
+                    <div class="dash-bloco" id="bloco-produtos">
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0 dash-tabela">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Produto</th>
+                                        <th class="dash-col-barra"></th>
+                                        <th class="text-end">Qtd.</th>
+                                        <th class="text-end">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-produtos"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- RF03 - pedidos recentes -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="dash-titulo">Pedidos recentes</h6>
+                            <p class="dash-subtitulo">Últimos pedidos do período filtrado</p>
+                        </div>
+                        <a class="btn btn-link btn-sm text-decoration-none" th:href="@{/pedidos}">Ver todos</a>
+                    </div>
+                    <div class="dash-bloco" id="bloco-recentes">
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0 dash-tabela">
+                                <thead>
+                                    <tr>
+                                        <th>Entrada</th>
+                                        <th>Cliente</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-recentes"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/plugins/chart.js/Chart.min.js}"></script>
+    <script th:src="@{/js/dashboard.js}"></script>
+</div>
+
+</body>
+</html>
