@@ -1,11 +1,27 @@
 # PediuPatrão - Atividade Prática M1 (Parte 2)
 
-Aluno: ______________________  RA: ______________
+Aluno: Pedro Henrique Prado Pacheco  RGM: 11231101417
 
 Sistema de pedidos de pizzaria feito com Java 21, Spring Boot 3, Spring Security, Thymeleaf e MongoDB.
 Nesta parte da atividade evoluí o projeto que foi passado em aula, mantendo as camadas que já existiam
 (entity, repository, service, controller) e acrescentando controle por perfil, fluxo de pedidos,
 descontos, cancelamento e auditoria.
+
+## Dashboard Administrativo
+
+Painel com indicadores de vendas, graficos, situacao dos pedidos, ranking de produtos e filtros,
+alimentado pela API `/api/dashboard/**` (perfis ADMIN e GERENTE). Tela em `/dashboard`.
+
+- Documento da entrega (requisitos, endpoints, evidencias de testes e decisoes): [docs/DASHBOARD.md](docs/DASHBOARD.md)
+- Evidencias: [docs/evidencias](docs/evidencias)
+- Video de apresentacao: https://youtu.be/hXq7OphN-IU
+- Roteiro do video: [docs/ROTEIRO-VIDEO.md](docs/ROTEIRO-VIDEO.md)
+
+Para criar pedidos de demonstracao (uma unica vez) e ver o dashboard preenchido:
+
+```
+mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--pediupatrao.demo.popular-pedidos=true"
+```
 
 ## Como executar
 
@@ -39,7 +55,7 @@ Na primeira execução a classe `DataInitializer` cria os usuários de teste e a
 mvnw.cmd test
 ```
 
-São 22 testes (JUnit + Mockito + MockMvc). Eles não precisam do MongoDB rodando.
+São 51 testes (JUnit + Mockito + MockMvc). Eles não precisam do MongoDB rodando.
 
 - `PedidoServiceTest`: cálculo do total, transições válidas e inválidas, desconto (limite de 20% e só antes da saída) e cancelamento.
 - `ClienteServiceTest`: auditoria registra só o campo que mudou (ex: logradouro) e máscara de dados.

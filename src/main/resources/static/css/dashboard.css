@@ -1,0 +1,191 @@
+/* Dashboard administrativo */
+.dash {
+    --dash-serie: #2a78d6;      /* cor unica dos graficos */
+    --dash-trilho: #e9ecef;     /* fundo das barras */
+    --dash-neutro: #6c757d;
+    --dash-bom: #0a7a0a;
+    --dash-critico: #d03b3b;
+}
+
+/* a pagina tem sidebar fixa: o conteudo precisa poder encolher */
+main.container-fluid {
+    min-width: 0;
+}
+
+.dash-titulo {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.dash-subtitulo {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 12px;
+}
+
+/* indicadores */
+.dash-kpi-rotulo {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.dash-kpi-valor {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.dash-kpi-apoio {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.dash-sobe {
+    color: var(--dash-bom);
+    font-weight: 600;
+}
+
+.dash-desce {
+    color: var(--dash-critico);
+    font-weight: 600;
+}
+
+/* graficos */
+.dash-grafico {
+    position: relative;
+    height: 260px;
+}
+
+/* estados de cada bloco: carregando, vazio e erro */
+.dash-bloco {
+    position: relative;
+    min-height: 120px;
+}
+
+.dash-bloco.carregando > :not(.dash-estado) {
+    opacity: 0.35;
+}
+
+.dash-bloco.vazio > :not(.dash-estado),
+.dash-bloco.erro > :not(.dash-estado) {
+    display: none;
+}
+
+.dash-estado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 120px;
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.dash-bloco.carregando .dash-estado {
+    position: absolute;
+    inset: 0;
+}
+
+/* situacao dos pedidos */
+.dash-status-linha {
+    display: grid;
+    grid-template-columns: 145px minmax(40px, 1fr) 36px;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 0.9rem;
+}
+
+.dash-status-linha .qtd {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.dash-trilho {
+    height: 10px;
+    border-radius: 4px;
+    background: var(--dash-trilho);
+    overflow: hidden;
+}
+
+.dash-barra {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--dash-serie);
+    transition: width 0.3s;
+}
+
+.dash-barra.neutro {
+    background: var(--dash-neutro);
+}
+
+.dash-barra.bom {
+    background: var(--dash-bom);
+}
+
+.dash-barra.critico {
+    background: var(--dash-critico);
+}
+
+/* tabelas */
+.dash-tabela th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.dash-tabela td {
+    font-size: 0.9rem;
+}
+
+.dash-tabela .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.dash-col-barra {
+    width: 30%;
+}
+
+.dash-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+.dash-etiqueta .bi {
+    color: var(--dash-neutro);
+}
+
+.dash-etiqueta.bom .bi {
+    color: var(--dash-bom);
+}
+
+.dash-etiqueta.critico .bi {
+    color: var(--dash-critico);
+}
+
+@media (max-width: 576px) {
+    .dash-kpi-valor {
+        font-size: 1.3rem;
+    }
+
+    .dash-status-linha {
+        grid-template-columns: 120px 1fr 32px;
+    }
+
+    .dash-col-barra {
+        display: none;
+    }
+}
