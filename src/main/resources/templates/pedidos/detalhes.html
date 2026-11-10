@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Pedido</title>
+</head>
+<body>
+
+<div th:fragment="content">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="/pedidos" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold mb-0">Pedido</h2>
+        <span class="badge fs-6"
+              th:classappend="${pedido.status == 'FINALIZADO'} ? 'bg-success' :
+                              (${pedido.status == 'CANCELADO'} ? 'bg-danger' :
+                              (${pedido.status == 'EM_PREPARACAO'} ? 'bg-warning text-dark' :
+                              (${pedido.status == 'PRONTO'} ? 'bg-info text-dark' :
+                              (${pedido.status == 'SAIU_PARA_ENTREGA' or pedido.status == 'RETIRADO'} ? 'bg-primary' : 'bg-secondary'))))"
+              th:text="${pedido.status}"></span>
+    </div>
+
+    <!-- Mensagens de feedback -->
+    <div class="alert alert-success alert-dismissible fade show" th:if="${sucesso}" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${sucesso}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" th:if="${erro}" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${erro}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row g-4">
+        <!-- Dados do pedido -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <p class="mb-1"><strong>Código:</strong> <span class="text-muted" th:text="${pedido.id}"></span></p>
+                    <p class="mb-1"><strong>Cliente:</strong> <span th:text="${pedido.clienteNome}"></span></p>
+                    <p class="mb-0"><strong>Tipo:</strong> <span th:text="${pedido.tipoEntrega}"></span></p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-medium">Itens</div>
+                <div class="card-body p-0">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Produto</th>
+                                <th>Qtd</th>
+                                <th>Preço unit.</th>
+                                <th class="text-end pe-3">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${pedido.itens}">
+                                <td class="ps-3" th:text="${item.nomeProduto}"></td>
+                                <td th:text="${item.quantidade}"></td>
+                                <td th:text="'R$ ' + ${#numbers.formatDecimal(item.precoUnitario, 1, 'POINT', 2, 'COMMA')}"></td>
+                                <td class="text-end pe-3" th:text="'R$ ' + ${#numbers.formatDecimal(item.subtotal, 1, 'POINT', 2, 'COMMA')}"></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end">Subtotal</td>
+                                <td class="text-end pe-3" th:text="'R$ ' + ${#numbers.formatDecimal(pedido.subtotal, 1, 'POINT', 2, 'COMMA')}"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end">
+                                    Desconto (<span th:text="${#numbers.formatDecimal(pedido.percentualDesconto, 1, 'POINT', 2, 'COMMA')}"></span>%)
+                                </td>
+                                <td class="text-end pe-3 text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(pedido.valorDesconto, 1, 'POINT', 2, 'COMMA')}"></td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td colspan="3" class="text-end">Total</td>
+                                <td class="text-end pe-3" th:text="'R$ ' + ${#numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Entrada e saida -->
+            <div class="card shadow-sm">
+                <div class="card-header fw-medium">Controle de entrada e saída</div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        <strong>Entrada:</strong>
+                        <span th:text="${pedido.dataHoraEntrada != null} ? ${#temporals.format(pedido.dataHoraEntrada, 'dd/MM/yyyy HH:mm:ss')} : '-'"></span>
+                        por <span th:text="${pedido.usuarioEntrada}"></span>
+                    </p>
+                    <p class="mb-1">
+                        <strong>Saída:</strong>
+                        <span th:if="${pedido.dataHoraSaida == null}">ainda não saiu</span>
+                        <span th:if="${pedido.dataHoraSaida != null}">
+                            <span th:text="${#temporals.format(pedido.dataHoraSaida, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                            por <span th:text="${pedido.usuarioSaida}"></span>
+                        </span>
+                    </p>
+                    <p class="mb-1" th:if="${pedido.dataHoraFinalizacao != null}">
+                        <strong>Finalizado:</strong>
+                        <span th:text="${#temporals.format(pedido.dataHoraFinalizacao, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                        por <span th:text="${pedido.usuarioFinalizacao}"></span>
+                    </p>
+                    <p class="mb-1" th:if="${pedido.dataHoraDesconto != null}">
+                        <strong>Desconto aplicado:</strong>
+                        <span th:text="${#temporals.format(pedido.dataHoraDesconto, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                        por <span th:text="${pedido.usuarioDesconto}"></span>
+                    </p>
+                    <div th:if="${pedido.status == 'CANCELADO'}" class="alert alert-danger mt-3 mb-0">
+                        <strong>Cancelado</strong> em
+                        <span th:text="${#temporals.format(pedido.dataHoraCancelamento, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                        por <span th:text="${pedido.usuarioCancelamento}"></span><br>
+                        <strong>Justificativa:</strong> <span th:text="${pedido.justificativaCancelamento}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <a sec:authorize="hasAnyRole('ADMIN', 'GERENTE')" class="btn btn-sm btn-outline-dark mt-3"
+               th:href="@{/auditoria(entidadeId=${pedido.id})}">
+                <i class="bi bi-journal-text"></i> Ver auditoria deste pedido
+            </a>
+        </div>
+
+        <!-- Acoes do gerente -->
+        <div class="col-lg-5" sec:authorize="hasRole('GERENTE')">
+
+            <div class="card shadow-sm mb-4" th:if="${proximoStatus != null}">
+                <div class="card-header fw-medium">Andamento</div>
+                <div class="card-body">
+                    <form th:action="@{/pedidos/{id}/status(id=${pedido.id})}" method="post">
+                        <input type="hidden" name="status" th:value="${proximoStatus}">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-arrow-right-circle"></i>
+                            Mover para <span th:text="${proximoStatus}"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4" th:if="${antesDaSaida}">
+                <div class="card-header fw-medium">Aplicar desconto (máx. 20%)</div>
+                <div class="card-body">
+                    <form th:action="@{/pedidos/{id}/desconto(id=${pedido.id})}" method="post">
+                        <div class="mb-2">
+                            <label class="form-label" for="percentual">Percentual (%)</label>
+                            <input type="number" id="percentual" name="percentual" class="form-control"
+                                   min="0.01" max="20" step="0.01" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" for="motivoDesconto">Motivo (opcional)</label>
+                            <input type="text" id="motivoDesconto" name="justificativa" class="form-control" maxlength="200">
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Aplicar desconto</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-danger" th:if="${antesDaSaida}">
+                <div class="card-header fw-medium text-danger">Cancelar pedido</div>
+                <div class="card-body">
+                    <form th:action="@{/pedidos/{id}/cancelar(id=${pedido.id})}" method="post"
+                          onsubmit="return confirm('Confirma o cancelamento deste pedido?')">
+                        <div class="mb-2">
+                            <label class="form-label" for="justificativa">Justificativa (obrigatória)</label>
+                            <textarea id="justificativa" name="justificativa" class="form-control" rows="3"
+                                      minlength="5" maxlength="500" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100">Cancelar pedido</button>
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-muted small" th:if="${proximoStatus == null and !antesDaSaida}">
+                Este pedido não permite mais alterações.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
