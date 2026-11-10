@@ -5,6 +5,8 @@ e principais decisões de análise e projeto.
 
 - **Tela:** `http://localhost:8080/dashboard` (perfis ADMIN e GERENTE)
 - **API:** `http://localhost:8080/api/dashboard/**`
+- **Aluno:** Pedro Henrique Prado Pacheco · **RGM:** 11231101417
+- **Vídeo de apresentação:** https://youtu.be/hXq7OphN-IU
 - **Branch da implementação:** `feature/dashboard-administrativo` (gitflow, criada a partir de `develop`)
 
 ## Sumário

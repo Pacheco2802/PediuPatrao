@@ -1,6 +1,6 @@
 # PediuPatrão - Atividade Prática M1 (Parte 2)
 
-Aluno: ______________________  RA: ______________
+Aluno: Pedro Henrique Prado Pacheco  RGM: 11231101417
 
 Sistema de pedidos de pizzaria feito com Java 21, Spring Boot 3, Spring Security, Thymeleaf e MongoDB.
 Nesta parte da atividade evoluí o projeto que foi passado em aula, mantendo as camadas que já existiam
@@ -14,6 +14,7 @@ alimentado pela API `/api/dashboard/**` (perfis ADMIN e GERENTE). Tela em `/dash
 
 - Documento da entrega (requisitos, endpoints, evidencias de testes e decisoes): [docs/DASHBOARD.md](docs/DASHBOARD.md)
 - Evidencias: [docs/evidencias](docs/evidencias)
+- Video de apresentacao: https://youtu.be/hXq7OphN-IU
 - Roteiro do video: [docs/ROTEIRO-VIDEO.md](docs/ROTEIRO-VIDEO.md)
 
 Para criar pedidos de demonstracao (uma unica vez) e ver o dashboard preenchido:
